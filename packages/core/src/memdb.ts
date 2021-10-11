@@ -19,7 +19,8 @@ import type { Tx, TxCreateDoc, TxMixin, TxPutBag, TxRemoveDoc, TxUpdateDoc } fro
 import core from './component'
 import type { Hierarchy } from './hierarchy'
 import { _getOperator } from './operator'
-import { findProperty, resultSort } from './query'
+import { resultSort } from './query'
+import { createPredicates, isPredicate } from './predicate'
 import type { DocumentQuery, FindOptions, FindResult, Storage, WithLookup, LookupData, Refs } from './storage'
 import { TxProcessor } from './tx'
 
@@ -95,6 +96,23 @@ export abstract class MemDb extends TxProcessor {
     return withLookup
   }
 
+  private async findProperty (objects: Doc[], propertyKey: string, value: any): Promise<Doc[]> {
+    if (isPredicate(value)) {
+      const preds = await createPredicates(value, propertyKey, this)
+      for (const pred of preds) {
+        objects = pred(objects)
+      }
+      return objects
+    }
+    const result: Doc[] = []
+    for (const object of objects) {
+      if ((object as any)[propertyKey] === value) {
+        result.push(object)
+      }
+    }
+    return result
+  }  
+
   async findAll<T extends Doc>(
     _class: Ref<Class<T>>,
     query: DocumentQuery<T>,
@@ -113,7 +131,7 @@ export abstract class MemDb extends TxProcessor {
     for (const key in query) {
       if (key === '_id' && ((query._id as any)?.$like === undefined || query._id === undefined)) continue
       const value = (query as any)[key]
-      result = findProperty(result, key, value)
+      result = await this.findProperty(result, key, value)
     }
 
     if (options?.sort !== undefined) resultSort(result, options?.sort)

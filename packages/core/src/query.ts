@@ -1,26 +1,5 @@
 import { Doc } from './classes'
-import { createPredicates, isPredicate } from './predicate'
 import { SortingQuery } from './storage'
-
-/**
- * @public
- */
-export function findProperty (objects: Doc[], propertyKey: string, value: any): Doc[] {
-  if (isPredicate(value)) {
-    const preds = createPredicates(value, propertyKey)
-    for (const pred of preds) {
-      objects = pred(objects)
-    }
-    return objects
-  }
-  const result: Doc[] = []
-  for (const object of objects) {
-    if ((object as any)[propertyKey] === value) {
-      result.push(object)
-    }
-  }
-  return result
-}
 
 /**
  * @public

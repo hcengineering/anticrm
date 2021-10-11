@@ -63,7 +63,7 @@
   $: statesQuery.query(core.class.State, { _id: { $in: kanban?.states ?? [] } }, result => { states = sort(result) })
 
   const query = createQuery()
-  $: query.query(_class, { space }, result => { objects = sortObjects(result) }, options)
+  $: query.query(_class, { _id: { $in_array: { $class: view.class.Kanban, $array: kanban?._id, $key: 'order' } } }, result => { objects = result }, options)
 
   function dragover(ev: MouseEvent, object: Doc) {
     if (dragCard !== object) {

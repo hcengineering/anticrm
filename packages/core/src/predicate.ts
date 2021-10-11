@@ -14,13 +14,14 @@
 // limitations under the License.
 //
 
-import type { Doc } from './classes'
+import type { Doc, Ref, Class } from './classes'
+import type { Storage } from './storage'
 
 type Predicate = (docs: Doc[]) => Doc[]
-type PredicateFactory = (pred: any, propertyKey: string) => Predicate
+type PredicateFactory = (pred: any, propertyKey: string, storage: Storage) => Promise<Predicate>
 
 const predicates: Record<string, PredicateFactory> = {
-  $in: (o: any, propertyKey: string): Predicate => {
+  $in: async (o: any, propertyKey: string): Promise<Predicate> => {
     if (!Array.isArray(o)) {
       throw new Error('$in predicate requires array')
     }
@@ -33,7 +34,24 @@ const predicates: Record<string, PredicateFactory> = {
     }
   },
 
-  $like: (query: string, propertyKey: string): Predicate => {
+  $in_array: async (o: { $clazz: Ref<Class<Doc>>, $array: Ref<Doc>, $key: string }, propertyKey: string, storage: Storage): Promise<Predicate> => {
+    const container = (await storage.findAll(o.$clazz, { _id: o.$array }))[0]
+    if (container === undefined)
+      return () => []
+
+    const arr = (container as any)[o.$key] as Ref<Doc>[]
+    return (docs: Doc[]): Doc[] => {
+      const result: Doc[] = []
+      for (const doc of docs) {
+        if (arr.includes((doc as any)[propertyKey])) result.push(doc)
+      }
+
+      const map = result.reduce((map, doc) => { map.set(doc._id, doc); return map }, new Map<Ref<Doc>, Doc>())
+      return arr.map(id => map.get(id) as Doc)
+    }
+  },
+
+  $like: async (query: string, propertyKey: string): Promise<Predicate> => {
     const searchString = query.split('%').join('.*')
     const regex = RegExp(`^${searchString}$`, 'i')
     return (docs: Doc[]): Doc[] => {
@@ -46,7 +64,7 @@ const predicates: Record<string, PredicateFactory> = {
     }
   },
 
-  $regex: (o: { $regex: string, $options: string }, propertyKey: string): Predicate => {
+  $regex: async (o: { $regex: string, $options: string }, propertyKey: string): Promise<Predicate> => {
     const re = new RegExp(o.$regex, o.$options)
     return (docs: Doc[]): Doc[] => {
       const result: Doc[] = []
@@ -65,13 +83,13 @@ export function isPredicate (o: Record<string, any>): boolean {
   return keys.length > 0 && keys.every((key) => key.startsWith('$'))
 }
 
-export function createPredicates (o: Record<string, any>, propertyKey: string): Predicate[] {
+export async function createPredicates (o: Record<string, any>, propertyKey: string, storage: Storage): Promise<Predicate[]> {
   const keys = Object.keys(o)
-  const result: Predicate[] = []
+  const result: Promise<Predicate>[] = []
   for (const key of keys) {
     const factory = predicates[key]
     if (factory === undefined) throw new Error('unknown predicate: ' + keys[0])
-    result.push(factory(o[key], propertyKey))
+    result.push(factory(o[key], propertyKey, storage))
   }
-  return result
+  return Promise.all(result)
 }
