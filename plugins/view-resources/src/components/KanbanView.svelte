@@ -81,7 +81,7 @@
     const txes: TxCUD<Doc>[] = []
 
     if (dragCardInitialState !== state) {
-      client.updateDoc(_class, space, id, { state })
+      client.updateDoc(_class, space, id, { $set: { state } })
       // txes.push(client.txFactory.createTxUpdateDoc(_class, space, id, { state }))
     }
 

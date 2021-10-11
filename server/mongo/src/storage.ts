@@ -14,7 +14,7 @@
 //
 
 import type { Tx, Ref, Doc, Class, DocumentQuery, FindResult, FindOptions, TxCreateDoc, TxUpdateDoc, TxMixin, TxPutBag, TxRemoveDoc } from '@anticrm/core'
-import core, { DOMAIN_TX, SortingOrder, TxProcessor, Hierarchy, isOperator } from '@anticrm/core'
+import core, { DOMAIN_TX, SortingOrder, TxProcessor, Hierarchy } from '@anticrm/core'
 
 import type { DbAdapter, TxAdapter } from '@anticrm/server-core'
 
@@ -133,44 +133,39 @@ class MongoAdapter extends MongoAdapterBase {
 
   protected override async txUpdateDoc (tx: TxUpdateDoc<Doc>): Promise<void> {
     const domain = this.hierarchy.getDomain(tx.objectClass)
-    if (isOperator(tx.operations)) {
-      const operator = Object.keys(tx.operations)[0]
-      if (operator === '$move') {
-        const keyval = (tx.operations as any).$move
-        const arr = Object.keys(keyval)[0]
-        const desc = keyval[arr]
-        const ops = [
-          {
-            updateOne: {
-              filter: { _id: tx.objectId },
-              update: {
-                $pull: {
-                  [arr]: desc.$value
-                }
+    const operator = Object.keys(tx.operations)[0]
+    if (operator === '$move') {
+      const keyval = (tx.operations as any).$move
+      const arr = Object.keys(keyval)[0]
+      const desc = keyval[arr]
+      const ops = [
+        {
+          updateOne: {
+            filter: { _id: tx.objectId },
+            update: {
+              $pull: {
+                [arr]: desc.$value
               }
             }
-          },
-          {
-            updateOne: {
-              filter: { _id: tx.objectId },
-              update: {
-                $push: {
-                  [arr]: {
-                    $each: [desc.$value],
-                    $position: desc.$position
-                  }
+          }
+        },
+        {
+          updateOne: {
+            filter: { _id: tx.objectId },
+            update: {
+              $push: {
+                [arr]: {
+                  $each: [desc.$value],
+                  $position: desc.$position
                 }
               }
             }
           }
-        ]
-        console.log('ops', ops)
-        await this.db.collection(domain).bulkWrite(ops as any)
-      } else {
-        await this.db.collection(domain).updateOne({ _id: tx.objectId }, tx.operations)
-      }
+        }
+      ]
+      await this.db.collection(domain).bulkWrite(ops as any)
     } else {
-      await this.db.collection(domain).updateOne({ _id: tx.objectId }, { $set: tx.operations })
+      await this.db.collection(domain).updateOne({ _id: tx.objectId }, tx.operations)
     }
   }
 

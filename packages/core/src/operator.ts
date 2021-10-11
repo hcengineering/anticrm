@@ -81,7 +81,15 @@ function $inc (document: Doc, keyval: Record<string, number>): void {
   }
 }
 
+function $set (document: Doc, keyval: any): void {
+  const doc = document as unknown as Record<string, any>
+  for (const key in keyval) {
+    doc[key] = keyval[key]
+  }
+}
+
 const operators: Record<string, _OperatorFunc> = {
+  $set,
   $push,
   $pull,
   $move,

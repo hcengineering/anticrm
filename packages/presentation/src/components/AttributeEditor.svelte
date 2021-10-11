@@ -43,7 +43,7 @@
 
   function onChange(value: any) {
     const doc = object as Doc
-    client.updateDoc(_class, doc.space, doc._id, { [key]: value })
+    client.updateDoc(_class, doc.space, doc._id, { $set: { [key]: value } })
   }
 </script>
 

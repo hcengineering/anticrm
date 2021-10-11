@@ -126,6 +126,7 @@ export interface PushOptions<T extends Doc> {
   $push?: Partial<OmitNever<ArrayAsElementPosition<T>>>
   $pull?: Partial<OmitNever<ArrayAsElement<T>>>
   $move?: Partial<OmitNever<ArrayMoveDescriptor<T>>>
+  $set?: Partial<Data<T>>
 }
 
 /**
@@ -148,7 +149,7 @@ export interface IncOptions<T extends Doc> {
 /**
  * @public
  */
-export type DocumentUpdate<T extends Doc> = Partial<Data<T>> & PushOptions<T> & PushMixinOptions<T> & IncOptions<T>
+export type DocumentUpdate<T extends Doc> = PushOptions<T> & PushMixinOptions<T> & IncOptions<T>
 
 /**
  * @public

@@ -36,7 +36,7 @@ export async function OnDocWithState (tx: Tx, txFactory: TxFactory, findAll: Fin
         throw new Error('OnDocWithState: kanban not found')
       }
       return [
-        txFactory.createTxUpdateDoc(createTx.objectClass, createTx.objectSpace, createTx.objectId, { state: state._id }),
+        txFactory.createTxUpdateDoc(createTx.objectClass, createTx.objectSpace, createTx.objectId, { $set: { state: state._id } }),
         txFactory.createTxUpdateDoc(view.class.Kanban, createTx.objectSpace, kanban._id, { $push: { order: createTx.objectId } })
       ]
     }

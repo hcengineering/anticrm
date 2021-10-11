@@ -49,15 +49,15 @@
 
   function saveChannels(result: any) {
     object.channels = result
-    client.updateDoc(recruit.class.Candidate, object.space, object._id, { channels: result })
+    client.updateDoc(recruit.class.Candidate, object.space, object._id, { $set: { channels: result } })
   }
 
   function firstNameChange() {
-    client.updateDoc(recruit.class.Candidate, object.space, object._id, { name: combineName(firstName, getLastName(object.name)) })
+    client.updateDoc(recruit.class.Candidate, object.space, object._id, { $set: { name: combineName(firstName, getLastName(object.name)) } })
   }
 
   function lastNameChange() {
-    client.updateDoc(recruit.class.Candidate, object.space, object._id, { name: combineName(getFirstName(object.name), lastName) })
+    client.updateDoc(recruit.class.Candidate, object.space, object._id, { $set: { name: combineName(getFirstName(object.name), lastName) } })
   }
 
 </script>
