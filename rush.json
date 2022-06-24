@@ -1348,6 +1348,21 @@
       "projectFolder": "models/automation",
       "shouldPublish": true
     },
+    {    
+      "packageName": "@anticrm/server-automation",
+      "projectFolder": "server-plugins/automation",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@anticrm/model-server-automation",
+      "projectFolder": "models/server-automation",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@anticrm/server-automation-resources",
+      "projectFolder": "server-plugins/automation-resources",
+      "shouldPublish": true
+    },
     {
       "packageName": "@anticrm/hr",
       "projectFolder": "plugins/hr",

@@ -29,6 +29,7 @@ import { createModel as leadModel } from '@anticrm/model-lead'
 import { createModel as presentationModel } from '@anticrm/model-presentation'
 import { createModel as recruitModel } from '@anticrm/model-recruit'
 import { createModel as serverAttachmentModel } from '@anticrm/model-server-attachment'
+import { createModel as serverAutomationModel } from '@anticrm/model-server-automation'
 import { createModel as serverBoardModel } from '@anticrm/model-server-board'
 import { createModel as serverContactModel } from '@anticrm/model-server-contact'
 import { createModel as serverNotificationModel } from '@anticrm/model-server-notification'
@@ -104,6 +105,7 @@ const builders: [(b: Builder) => void, string][] = [
   [serverGmailModel, 'server-gmail'],
   [serverTelegramModel, 'server-telegram'],
   [serverHrModel, 'server-hr'],
+  [serverAutomationModel, 'server-automation-model'],
   [trackerModel, 'tracker'],
   [boardModel, 'board'],
   [calendarModel, 'calendar'],

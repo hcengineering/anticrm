@@ -38,6 +38,7 @@ import { ModifiedMiddleware, PrivateMiddleware } from '@anticrm/middleware'
 import { createMongoAdapter, createMongoTxAdapter } from '@anticrm/mongo'
 import { addLocation } from '@anticrm/platform'
 import { serverAttachmentId } from '@anticrm/server-attachment'
+import { serverAutomationId } from '@anticrm/server-automation'
 import { serverBoardId } from '@anticrm/server-board'
 import { serverCalendarId } from '@anticrm/server-calendar'
 import { serverChunterId } from '@anticrm/server-chunter'
@@ -139,7 +140,7 @@ export function start (
   addLocation(serverGmailId, () => import('@anticrm/server-gmail-resources'))
   addLocation(serverTelegramId, () => import('@anticrm/server-telegram-resources'))
   addLocation(serverHrId, () => import('@anticrm/server-hr-resources'))
-
+  addLocation(serverAutomationId, () => import('@anticrm/server-automation-resources'))
   const middlewares: MiddlewareCreator[] = [ModifiedMiddleware.create, PrivateMiddleware.create]
 
   return startJsonRpc(
