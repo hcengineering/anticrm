@@ -41,7 +41,7 @@ import view, { createAction, actionTemplates as viewTemplates } from '@anticrm/m
 import workbench, { Application, createNavigateAction } from '@anticrm/model-workbench'
 import { IntlString } from '@anticrm/platform'
 import { Applicant, Candidate, Candidates, recruitId, Vacancy } from '@anticrm/recruit'
-import { KeyBinding } from '@anticrm/view'
+import { KeyBinding, ViewletType } from '@anticrm/view'
 import setting from '@anticrm/setting'
 import recruit from './plugin'
 import { createReviewModel, reviewTableConfig, reviewTableOptions } from './review'
@@ -361,7 +361,12 @@ export function createModel (builder: Builder): void {
     options: {
       lookup: applicantKanbanLookup
     } as FindOptions<Doc>, // TODO: fix
-    config: []
+    config: [
+      { key: '$lookup.attachedTo', label: recruit.string.Application, position: { horizontal: 'left' } },
+      { key: '$lookup.todoItems', label: task.string.Todos, position: { horizontal: 'left' } },
+      { key: '$lookup.assignee', label: task.string.TaskAssignee, position: { horizontal: 'right' } }
+    ],
+    type: ViewletType.Kanban
   })
 
   builder.createDoc(view.class.Viewlet, core.space.Model, {

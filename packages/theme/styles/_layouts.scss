@@ -722,7 +722,9 @@ a.no-line {
 .bottom-divider { border-bottom: 1px solid var(--divider-color); }
 .bottom-highlight-select { border-bottom: 1px solid var(--highlight-select); }
 
-
+.drop-area {
+  border: 1px dashed var(--divider-color)
+}
 
 .checkbox_style {
   input {

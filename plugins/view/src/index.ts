@@ -32,7 +32,7 @@ import type {
 } from '@anticrm/core'
 import { Asset, IntlString, Plugin, plugin, Resource, Status } from '@anticrm/platform'
 import type { Preference } from '@anticrm/preference'
-import type { AnyComponent, AnySvelteComponent, PopupAlignment, PopupPosAlignment } from '@anticrm/ui'
+import type { AnyComponent, AnySvelteComponent, HorizontalAlignment, PopupAlignment, PopupPosAlignment } from '@anticrm/ui'
 
 /**
  * @public
@@ -171,12 +171,21 @@ export interface ViewletDescriptor extends Doc, UXObject {
 /**
  * @public
  */
+export enum ViewletType {
+  Table = 'TABLE',
+  Kanban = 'KANBAN'
+}
+
+/**
+ * @public
+ */
 export interface Viewlet extends Doc {
   attachTo: Ref<Class<Space>>
   descriptor: Ref<ViewletDescriptor>
   options?: FindOptions<Doc>
   config: (BuildModelKey | string)[]
   hiddenKeys?: string[]
+  type?: ViewletType
 }
 
 /**
@@ -327,6 +336,13 @@ export const viewId = 'view' as Plugin
 /**
  * @public
  */
+export interface BuildModelKeyPosition {
+  horizontal: HorizontalAlignment
+}
+
+/**
+ * @public
+ */
 export interface BuildModelKey {
   key: string
   presenter?: AnyComponent
@@ -334,6 +350,7 @@ export interface BuildModelKey {
   props?: Record<string, any>
 
   label?: IntlString
+  position?: BuildModelKeyPosition
   sortingKey?: string | string[]
 
   // On client sorting function
